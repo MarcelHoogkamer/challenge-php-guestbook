@@ -7,9 +7,18 @@ error_reporting(E_ALL);
 
 require './classes/post.php';
 require './classes/postloader.php';
+require './templates/validate.php';
 
-session_start();
+$guestbookFile = 'guestbook.txt';
 
+if (isset($_POST['action']) && $isValid) {
+
+    $input = new Post($_POST['name'], $_POST['email'], $_POST['title'], $_POST['message']);
+    $postLoader = new postLoader();
+    $postLoader->writeGuestbook($guestbookFile, $input);
+    $postLoader->setPosts($guestbookFile);
+
+}
 ?>
 
 
@@ -20,44 +29,59 @@ session_start();
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" type="text/css"
+          rel="stylesheet"/>
     <link rel="stylesheet" href="./css/style.css">
 
     <title>Challenge PHP Guestbook</title>
 </head>
 <body>
-    <header>
-        <h1>Mark's PHP Guestbook</h1>
-    </header>
+<?php
+if ($isValid) {
+    echo "<div class='alert alert-info' role='alert'><span class='message'>Thank you for posting in my guestbook $name!</span></div>";
+}
+?>
+
+<?php include './templates/header.php'?>
+
     <section class="form">
-        <form class="form" action="" method="post">
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
             <table>
                 <tr>
-            <td><label for="fname">First name:</label></td>
-            <td><input type="text" id="fname" name="fname" value="" placeholder="Your first name here"></td>
-                </tr>
-                <tr>
-            <td><label for="lname">Last name:</label></td>
-            <td><input type="text" id="lname" name="lname" value="" placeholder="Your last name here"></td>
+            <td><label for="name">Full name:</label></td>
+
+            <td><input type="text" id="name" name="name" placeholder="Your name here" value="<?php echo $name ?? '';?>" class="form-control"/><span class="error"><?php echo $nameErr?></span></td>
                 </tr>
                 <tr>
             <td><label for="email">E-mail address:</label></td>
-            <td><input type="text" id="email" name="email" value="" placeholder="Your e-mail address here"></td>
+            <td><input type="text" id="email" name="email" placeholder="Your e-mail address here" value="<?php echo $email ?? '';?>" class="form-control"/><span class="error"><?php echo $emailErr?></span></td>
                 </tr>
                 <tr>
             <td><label for="title">Message title:</label></td>
-            <td><input type="text" id="title" name="title" value="" placeholder="Title of your message"></td>
+            <td><input type="text" id="title" name="title" placeholder="Title of your message" value="<?php echo $title ?? '';?>" class="form-control"/><span class="error"><?php echo $titleErr?></span></td>
                 </tr>
                 <tr>
-            <td colspan="2"><textarea name="message" style="width:450px; height:150px;" placeholder="Leave a message in the guestbook"></textarea><br>
-            <input type="submit" value="SUBMIT YOUR ENTRY"></td>
+            <td colspan="2"><textarea name="message" style="width:450px; height:150px;" placeholder="Leave a message in the guestbook" value="<?php echo $message ?? '';?>" class="form-control"/></textarea><span class="error"><?php echo $messageErr?></span><br>
+            <input type="submit" name="action" value="SUBMIT YOUR ENTRY"></td>
                 </tr>
             </table>
         </form>
     </section>
 
     <h2>Recent posts (sorted by date):</h2><br><br>
-    <footer class="footer">
-            <p>© <script>document.write(new Date().getFullYear())</script> - Mark Hoogkamer. All right reserved.</p>
-    </footer>
+    <h4>
+    <?php
+        if (isset($postLoader)) {
+            for ($i = 0; $i <= 20; $i++) {
+            echo $postLoader->getPosts()[$i]['name'] . "<br>";
+            echo $postLoader->getPosts()[$i]['email'] . "<br>";
+            echo $postLoader->getPosts()[$i]['date'] . "<br>";
+            echo $postLoader->getPosts()[$i]['title'] . "<br>";
+            echo $postLoader->getPosts()[$i]['message'] . "<br>";
+             }
+        }
+?></h4>
+
+   <?php include './templates/footer.php'?>
 </body>
 </html>

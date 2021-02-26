@@ -1,61 +1,36 @@
 <?php
 
+use JetBrains\PhpStorm\ArrayShape;
+
 class Post {
-    private string $fname;
-    private string $lname;
+
+// PROPERTIES OF THE CLASS
+    private string $name;
     private string $email;
     private string $title;
     private string $message;
+    private string $date;
 
-
-    public function getFname(): string
-    {
-        return $this->fname;
-    }
-
-    public function setFname(string $fname): void
-    {
-        $this->fname = $fname;
-    }
-
-    public function getLname(): string
-    {
-        return $this->lname;
-    }
-
-    public function setLname(string $lname): void
-    {
-        $this->lname = $lname;
-    }
-
-    public function getEmail(): string
-    {
-        return $this->email;
-    }
-
-    public function setEmail(string $email): void
-    {
+// CONSTRUCTOR
+    public function __construct(string $name, string $email, string $title, string $message) {
+        $this->name = $name;
         $this->email = $email;
-    }
-
-    public function getTitle(): string
-    {
-        return $this->title;
-    }
-
-    public function setTitle(string $title): void
-    {
         $this->title = $title;
-    }
-
-    public function getMessage(): string
-    {
-        return $this->message;
-    }
-
-    public function setMessage(string $message): void
-    {
         $this->message = $message;
+        $this->date = date("F j, Y");
+    }
+
+// MAKE AN ARRAY OF ALL THE DATA
+    #[ArrayShape(['name' => "string", 'email' => "string", 'title' => "string", 'message' => "string", 'date'=> "string"])]
+    public function makeArray():array{
+        return
+            [
+                'name'=>$this->name,
+                'email'=>$this->email,
+                'title'=>$this->title,
+                'message'=>$this->message,
+                'date'=>$this->date,
+            ];
     }
 
 
